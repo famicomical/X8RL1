@@ -377,8 +377,7 @@ int main( int argc , char *argv[] )
 	/* port assign */
 	int wp = 0x378;	/* OUTポート : LPT1 , データポート */
 	int rp = 0x379;	/* INポート  : LPT1 , ステータスポート */
-	ioperm(0x378, 2, 1);
-	printf("hey\n");
+	ioperm(0x377, 3, 1);
 	int wd = 0x3f;	/* DB1..DB4  : プルアップ電源供給、すべて正極性 */
 	int ww = 0x20;	/* DB5       : WRITE DATA */
 	int wc = 0x40;	/* DB6       : COMMAND DATA */
