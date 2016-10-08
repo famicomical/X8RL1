@@ -1,15 +1,11 @@
 /*
-	CZ8RL1 ����M�h���C�o�[
-
-	�p�������|�[�g�ɐڑ����ꂽX1turbo�p�f�[�^���R�[�_CZ8RL1�ƌ�M����
-	���A���^�C��������s�����߁Aticker���y�ъ��荞�ݐ���֐����K�v
-	�h�^�n�𒼐ڂ������̂ŁAWindowsNT/2000�ł͕s��
-
-	����M���͊��荞�݋֎~�����B
-
-	�������݃|�[�g�A�ǂݍ��݃|�[�g�́A���ꂼ�ꓯ���h�^�n�A�h���X��
-	���ɂȂ��Ă͂Ȃ�Ȃ��B
-
+	CZ8RL1 送受信ドライバー
+	パラレルポートに接続されたX1turbo用データレコーダCZ8RL1と交信する
+	リアルタイム制御を行うため、tickerが及び割り込み制御関数が必要
+	Ｉ／Ｏを直接たたくので、WindowsNT/2000では不可
+	送受信中は割り込み禁止される。
+	書き込みポート、読み込みポートは、それぞれ同じＩ／Ｏアドレスの
+	中になくてはならない。
 */
 
 #include <stdio.h>
@@ -19,7 +15,7 @@
 #include "x1tape.h"
 #include "cz8rl1.h"
 
-/* 8RL1�f�o�b�O�̂��� */
+/* 8RL1デバッグのため */
 #define VERBOSE 0
 
 /* output I/O assign and access macro */
@@ -83,8 +79,8 @@ static int cz8rl1_apss_break(void)
 	return dobreak;
 }
 
-/* CZ8RL1����P�o�C�g��M */
-/* ���荞�݋֎~��ԂŌĂяo������ */
+/* CZ8RL1から１バイト受信 */
+/* 割り込み禁止状態で呼び出すこと */
 static int cz8rl1_rx(void)
 {
 	TICKER bitwidth;
@@ -150,8 +146,8 @@ static int cz8rl1_rx(void)
 	return value;
 }
 
-/* CZ8RL1�ɂP�o�C�g���M */
-/* ���荞�݋֎~��ԂŌĂяo������ */
+/* CZ8RL1に１バイト送信 */
+/* 割り込み禁止状態で呼び出すこと */
 static void cz8rl1_tx(BYTE value)
 {
 	BYTE bitmask;
@@ -173,7 +169,7 @@ static void cz8rl1_tx(BYTE value)
 	}
 }
 
-/* CMT�ɃR�}���h�]���{�X�e�[�^�X���[�h */
+/* CMTにコマンド転送＋ステータスリード */
 /*
  in
 	value = controll command
@@ -219,7 +215,7 @@ int cz8rl1_write(BYTE value)
 	return status;
 }
 
-/* CZ8RL1 -> �o�b�t�@ �z���o�� */
+/* CZ8RL1 -> バッファ 吸い出し */
 int CZ8RL1_read_data(
 	BYTE *buf,			/* buffer pointer                  */
 	unsigned int *pbufsize,	/* buffer size / sampling size     */
@@ -352,7 +348,7 @@ int CZ8RL1_read_data(
 	return err;
 }
 
-/* CZ8RL1 <- �o�b�t�@�f���o�� */
+/* CZ8RL1 <- バッファ吐き出し */
 int cz8rl1_write_data(BYTE *buf,unsigned int *pbufsize,unsigned int rate,int busybreak)
 {
 	unsigned int memsize = *pbufsize;
@@ -390,7 +386,7 @@ int cz8rl1_write_data(BYTE *buf,unsigned int *pbufsize,unsigned int rate,int bus
 	return CZ8RL1_STS_OK;
 }
 
-/* CZ8RL1 I/O������ */
+/* CZ8RL1 I/O初期化 */
 int CZ8RL1_init(
 	WORD wport_addr,
 	BYTE wdata_base,
