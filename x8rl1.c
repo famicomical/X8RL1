@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/io.h>
 #include "getch.h"
 #include "realtime.h"
 #include "x1tape.h"
@@ -47,7 +48,7 @@ static int idlebreak;		/* auto ditect / idle after write */
 static int idletime;		/* idle time of auto ditect / after write */
 static double jitterh;			/* raise eddge jitter rate */
 static double jitterl;			/* fall eddge jitter rate */
-static cz8rl1_controll;		/* CZ8RL1 full logic controll */
+static int cz8rl1_controll;		/* CZ8RL1 full logic controll */
 
 /*-----------------------------------------------------------------
 	CZ8RL1Çêßå‰Ç∑ÇÈ
